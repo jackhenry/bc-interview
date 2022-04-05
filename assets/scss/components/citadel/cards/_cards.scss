@@ -75,6 +75,15 @@
     width: 100%;
 }
 
+.secondary-card-image {
+    @extend .card-image;
+    opacity: 0.0;
+}
+
+.secondary-card-image:hover {
+    opacity: 1.0;
+}
+
 .card-title {
     font-size: $card-title-fontSize;
     margin: $card-title-margin;
