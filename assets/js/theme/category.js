@@ -49,6 +49,8 @@ export default class Category extends CatalogPage {
         this.ariaNotifyNoProducts();
 
         this.initCategoryCartButtons();
+
+        this.initCustomerBanner();
     }
 
     ariaNotifyNoProducts() {
@@ -160,5 +162,35 @@ export default class Category extends CatalogPage {
                 $('#clear-cart-button').css('display', 'inline-block');
             }
         });
+    }
+
+    initCustomerBanner() {
+        const { customer } = this.context;
+        // Customer will be null if there is no customer logged in.
+        // Therefore, hide the promotional banner
+        if (!customer) {
+            $('[data-banner-id="Customer Name"]').parent().hide();
+            return;
+        }
+
+        const { name, phone, email } = customer;
+        // If the phone number string has length of 10, format into (xxx) xxx-xxxx
+        let formattedPhone = phone ? phone.replace(/\s/g, '') : phone;
+        if (phone && phone.length === 10) {
+            const area = phone.slice(0, 3);
+            const secondPart = phone.slice(3, 6);
+            const lastPart = phone.slice(6);
+            formattedPhone = `(${area}) ${secondPart}-${lastPart}`;
+        }
+
+        // Since it is possible for a customer to create an account without a phone number,
+        // Display N/A if number is null.
+        $('#customer-banner').html(`
+            <span>customer details:</span>
+            <span>name: ${name}</span>
+            <span>email: ${email}</span>
+            <span>phone: ${formattedPhone || 'N/A'}</span>
+        `);
+        $('[data-banner-id="Customer Name"]').parent().show();
     }
 }
