@@ -1,7 +1,8 @@
-import { hooks } from '@bigcommerce/stencil-utils';
+import { hooks, api } from '@bigcommerce/stencil-utils';
 import CatalogPage from './catalog';
 import compareProducts from './global/compare-products';
 import FacetedSearch from './common/faceted-search';
+import swal from './global/sweet-alert';
 import { createTranslationDictionary } from '../theme/common/utils/translations-utils';
 
 export default class Category extends CatalogPage {
@@ -46,6 +47,8 @@ export default class Category extends CatalogPage {
         $('a.reset-btn').on('click', () => this.setLiveRegionsAttributes($('span.reset-message'), 'status', 'polite'));
 
         this.ariaNotifyNoProducts();
+
+        this.initCategoryCartButtons();
     }
 
     ariaNotifyNoProducts() {
@@ -99,6 +102,63 @@ export default class Category extends CatalogPage {
                 maxPriceNotEntered,
                 onInvalidPrice,
             },
+        });
+    }
+
+    initCategoryCartButtons() {
+        // Click listener for "Add All to Cart" button
+        $('[data-category-products]').on('click', (event) => {
+            const categoryProducts = $(event.currentTarget).data('categoryProducts');
+            // For each product in category, create an add to cart api request promise
+            const addPromises = categoryProducts.map(product => new Promise((resolve) => {
+                $.get(product.add_to_cart_url).then(() => resolve());
+            }));
+
+            Promise.all(addPromises).then(() => {
+                // Update the cart pill count
+                api.cart.getCartQuantity({}, (_, quantity) => {
+                    $('body').trigger('cart-quantity-update', quantity);
+                    // Notify user that items were added to cart
+                    swal.fire({
+                        text: 'Added all items to cart.',
+                        icon: 'success',
+                    });
+                });
+            });
+        });
+
+        // Register click event handler for category clear cart button
+        $('#clear-cart-button').on('click', () => {
+            // Function for making DELETE request to storefront api
+            const deleteCart = (id) => {
+                $.ajax({
+                    url: `/api/storefront/carts/${id}`,
+                    method: 'DELETE',
+                }).then(() => {
+                    $('body').trigger('cart-quantity-update', 0);
+                    // Inform user that it was successful
+                    swal.fire({
+                        text: 'Removed all items from cart.',
+                        icon: 'info',
+                    });
+                });
+            };
+
+            // Relying on the cartId in this.context is iffy at best.
+            // Instead, call the api directly to get the cartId
+            api.cart.getCart({}, (_, response) => {
+                if (!response) return; // No cart exists
+                deleteCart(response.id);
+            });
+        });
+
+        // Register listener for cart-quantity-update event so clear cart button can be adjusted
+        $('body').on('cart-quantity-update', (event, quantity) => {
+            if (quantity <= 0) {
+                $('#clear-cart-button').css('display', 'none');
+            } else {
+                $('#clear-cart-button').css('display', 'inline-block');
+            }
         });
     }
 }
