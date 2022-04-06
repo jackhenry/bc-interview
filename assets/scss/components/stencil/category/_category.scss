@@ -18,3 +18,8 @@
     color: stencilColor("color-error");
     display: none;
 }
+
+#customer-banner {
+    display: flex;
+    flex-direction: column;
+}
