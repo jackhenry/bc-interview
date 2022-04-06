@@ -1,6 +1,6 @@
 ### Notes:
 
-- I created the "Special Items" category and the "Special Item" directly from the online console.
+- I created the "Special Items" category and the "Special Item" directly from the online dashboard.
 
 - In order to show a product's second image on hover, I added a second `responseive-img` component in the `card` component. This component is only rendered if the product has more than one image. This second `responsive-img` has an opacity of 0 until hovered over.
 
