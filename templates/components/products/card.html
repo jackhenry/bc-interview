@@ -73,6 +73,16 @@
                     lazyload=theme_settings.lazyload_mode
                     default_image=theme_settings.default_image_product
                 }}
+                {{! Ensure that there is a second image available}}
+                {{#if images.length '>' 1}}
+                    {{> components/common/responsive-img
+                        image=images.[1]
+                        class="secondary-card-image"
+                        fallback_size=theme_settings.productgallery_size
+                        lazyload=theme_settings.lazyload_mode
+                        default_image=theme_settings.default_image_product
+                    }}
+                {{/if}}
             </div>
         </a>
 
