@@ -9,3 +9,12 @@
 .category-header-image {
     width: 100%;
 }
+
+.special-category-header {
+    text-align: center;
+}
+
+#clear-cart-button {
+    color: stencilColor("color-error");
+    display: none;
+}

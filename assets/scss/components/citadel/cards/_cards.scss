@@ -65,7 +65,7 @@
     transform: translate3d(0, -50%, 0); // 2
 }
 
-.card-image {
+%card-image-base {
     @include lazy-loaded-img;
     border: 0;
     /* Object-fit polyfill */
@@ -75,13 +75,17 @@
     width: 100%;
 }
 
+.card-image {
+    @extend %card-image-base;
+}
+
 .secondary-card-image {
-    @extend .card-image;
-    opacity: 0.0;
+    @extend %card-image-base;
+    opacity: 0;
 }
 
 .secondary-card-image:hover {
-    opacity: 1.0;
+    opacity: 1;
 }
 
 .card-title {
